@@ -9,7 +9,7 @@ git clone https://github.com/aliomidvar1995/tilleh.git
 Navigate into project folder using terminal and run
 
 ```bash
-cd tilleh
+cd tilleh/laravel
 ```
 ```bash
 composer install
@@ -58,18 +58,13 @@ php artisan serve
 ```
 
 #### 9. Front End section
-
-```bash
-cd ../vue
-```
-
-#### 10. Run `npm install`
+Navigate into vue folder and run
 
 ```bash
 npm install
 ```
 
-#### 11. Run `npm run dev`
+#### 10. Run `npm run dev`
 
 ```bash
 npm run dev
