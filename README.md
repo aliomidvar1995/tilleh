@@ -58,7 +58,7 @@ php artisan serve
 ```
 
 #### 9. Front End section
-Navigate into vue folder and run
+Open the terminal in the vue folder and run
 
 ```bash
 npm install
