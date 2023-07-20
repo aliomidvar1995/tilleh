@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Resources\NewsResource;
 use App\Models\News;
 use App\Http\Requests\StoreNewsRequest;
 use App\Http\Requests\UpdateNewsRequest;
@@ -15,7 +16,7 @@ class NewsController extends Controller
      */
     public function index()
     {
-        return News::query()->paginate(2);
+        return NewsResource::collection(News::query()->paginate(2));
     }
 
     /**
@@ -23,10 +24,12 @@ class NewsController extends Controller
      */
     public function store(StoreNewsRequest $request)
     {
-        $image = Storage::put('/public/images', $request->file('image'));
-        $image = str_replace('public', 'storage', $image);
+        $image = Storage::disk('public')->put('/images', $request->file('image'));
+
+        // $image = Storage::disk('s3')->put('/images', $request->file('image'));
+
         $news = News::query()->create([
-            'image' => url($image),
+            'image' => $image,
             'title' => $request->title,
             'content' => $request->content
         ]);
@@ -39,7 +42,7 @@ class NewsController extends Controller
      */
     public function show(News $news)
     {
-        return $news;
+        return NewsResource::make($news);
     }
 
     /**
@@ -57,7 +60,7 @@ class NewsController extends Controller
             $news->update([
                 'dislikes' => $news->dislikes += 1
             ]);
-            return response(['likes' => $news->likes]);
+            return response()->noContent();
         }
     }
 
@@ -66,6 +69,10 @@ class NewsController extends Controller
      */
     public function destroy(News $news)
     {
-        //
+        Storage::disk('public')->delete($news->image);
+
+        // Storage::disk('s3')->delete($news->image);
+        
+        $news->delete();
     }
 }

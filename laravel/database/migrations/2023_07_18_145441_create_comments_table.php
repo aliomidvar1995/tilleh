@@ -18,11 +18,7 @@ return new class extends Migration
             $table->integer('dislikes')->default(0);
             $table->unsignedBigInteger('news_id');
             $table->timestamps();
-            $table->softDeletes();
-            $table->foreign('news_id')
-                    ->references('id')
-                    ->on('news')
-                    ->onDelete('cascade');
+            $table->foreign('news_id')->references('id')->on('news')->onDelete('cascade');
         });
     }
 

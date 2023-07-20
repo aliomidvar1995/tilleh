@@ -16,10 +16,12 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::apiResource('/news', NewsController::class)->only(['index', 'show', 'store', 'update']);
+Route::apiResource('/news', NewsController::class);
 
 Route::post('/comments', [CommentController::class, 'store']);
 
 Route::put('/comments/{comment}', [CommentController::class, 'update']);
+
+Route::delete('/comments/{comment}', [CommentController::class, 'destroy']);
 
 Route::get('/news/{news}/comments', [CommentController::class, 'index']);

@@ -1,11 +1,11 @@
 <template>
     <div class="container">
         <form class="news-form" @submit.prevent="handleSubmit">
-            <v-file-input @change="onChange" label="News image"></v-file-input>
+            <v-file-input :clearable="false" @change="onChange" label="News image"></v-file-input>
             <span class="error">{{ errors.image }}</span>
-            <v-text-field clearable label="News title" v-model="title"></v-text-field>
+            <v-text-field label="News title" v-model="title"></v-text-field>
             <span class="error">{{ errors.title }}</span>
-            <v-textarea clearable label="News content" v-model="content"></v-textarea>
+            <v-textarea label="News content" v-model="content"></v-textarea>
             <span class="error">{{ errors.content }}</span>
             <v-btn :loading="loading" type="submit" class="news-btn" text="Submit"></v-btn>
         </form>
@@ -18,13 +18,16 @@
                 <p class="news-content">
                     {{ n.content }}
                 </p>
-                <router-link :to="{ name: 'Comment', params: { news_id: n.id } }">
-                    <v-card-actions>
+                <v-card-actions>
+                    <router-link :to="{ name: 'Comment', params: { news_id: n.id } }">
                         <v-btn>
                             <v-icon size="large" color="blue-darken-2" icon="mdi-message-text"></v-icon>
                         </v-btn>
-                    </v-card-actions>
-                </router-link>
+                    </router-link>
+                    <v-btn>
+                        <v-icon @click="handleDelete(n.id)" icon="mdi-delete"></v-icon>
+                    </v-btn>
+                </v-card-actions>
                 <div>
                     <v-btn @click="(e) => handleLike(e, n.id)" variant="text" icon="mdi-thumb-up-outline"></v-btn>
                     <span>{{ n.likes }}</span>
@@ -83,27 +86,27 @@ function getNews() {
     axiosInstance.get(`/news?page=${page.value}`)
         .then((res) => {
             news.value = res.data.data
-            length.value = res.data.links.length - 2
+            length.value = res.data.meta.last_page
         })
 }
 
 
 function handleLike(e, id) {
     e.target.classList.add(`v-btn--disabled`)
-    axiosInstance.put(`/news/${id}`, {likes: 1})
-    .then((res) => {
-        getNews()
-        e.target.classList.remove(`v-btn--disabled`)
-    })
+    axiosInstance.put(`/news/${id}`, { likes: 1 })
+        .then((res) => {
+            getNews()
+            e.target.classList.remove(`v-btn--disabled`)
+        })
 }
 
 function handleDislike(e, id) {
     e.target.classList.add(`v-btn--disabled`)
-    axiosInstance.put(`/news/${id}`, {dislikes: 1})
-    .then((res) => {
-        getNews()
-        e.target.classList.remove(`v-btn--disabled`)
-    })
+    axiosInstance.put(`/news/${id}`, { dislikes: 1 })
+        .then((res) => {
+            getNews()
+            e.target.classList.remove(`v-btn--disabled`)
+        })
 }
 
 function handleSubmit() {
@@ -134,6 +137,15 @@ function handleSubmit() {
             loading.value = false
         })
 
+}
+
+function handleDelete(id) {
+    axiosInstance.delete(`/news/${id}`)
+        .then((res) => {
+            if (res.statusText === 'OK') {
+                getNews()
+            }
+        })
 }
 
 onMounted(() => {

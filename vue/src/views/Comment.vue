@@ -7,7 +7,7 @@
             </v-btn>
         </router-link>
         <v-form class="news-form" @submit.prevent="handleSubmit">
-            <v-textarea clearable label="Comment content" v-model="content"></v-textarea>
+            <v-textarea label="Comment content" v-model="content"></v-textarea>
             <span class="error">{{ errors.content }}</span>
             <v-btn :loading="loading" type="submit" class="news-btn" text="Submit"></v-btn>
         </v-form>
@@ -26,6 +26,11 @@
                 <p class="news-content">
                     {{ comment.content }}
                 </p>
+                <v-card-actions>
+                    <v-btn>
+                        <v-icon @click="handleDelete(comment.id)" icon="mdi-delete"></v-icon>
+                    </v-btn>
+                </v-card-actions>
                 <div>
                     <v-btn @click="(e) => handleLike(e, comment.id)" variant="text" icon="mdi-thumb-up-outline"></v-btn>
                     <span>{{ comment.likes }}</span>
@@ -95,7 +100,16 @@ function getComments() {
     .then((res) => {
         if (res.statusText === 'OK') {
             comments.value = res.data.data
-            length.value = res.data.links.length - 2
+            length.value = res.data.meta.last_page
+        }
+    })
+}
+
+function handleDelete(id) {
+    axiosInstance.delete(`/comments/${id}`)
+    .then((res) => {
+        if(res.statusText === 'OK') {
+            getComments()
         }
     })
 }

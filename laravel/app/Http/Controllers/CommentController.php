@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Resources\CommentResource;
 use App\Models\Comment;
 use App\Http\Requests\StoreCommentRequest;
 use App\Http\Requests\UpdateCommentRequest;
@@ -15,7 +16,7 @@ class CommentController extends Controller
      */
     public function index(News $news)
     {
-        return $news->comments()->paginate(5);
+        return CommentResource::collection($news->comments()->paginate(5));
     }
 
     /**
@@ -63,6 +64,6 @@ class CommentController extends Controller
      */
     public function destroy(Comment $comment)
     {
-        //
+        $comment->delete();
     }
 }
